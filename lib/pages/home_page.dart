@@ -50,18 +50,15 @@ class _BlogPageState extends State<BlogPage> {
             if (state is PostInitial) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is PostLoaded) {
-              return Column(
-                children: [
-                  _buildHeader(),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        _buildPostList(state),
-                        const Center(child: Text('About this blog')),
-                      ],
-                    ),
-                  ),
-                ],
+              return SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(),
+                    _buildPostList(state),
+                  ],
+                ),
               );
             }
             return const Center(child: Text('Failed to load posts'));
@@ -73,7 +70,7 @@ class _BlogPageState extends State<BlogPage> {
 
   Widget _buildHeader() {
     return const Padding(
-      padding: EdgeInsets.only(top: 16.0),
+      padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -87,7 +84,8 @@ class _BlogPageState extends State<BlogPage> {
 
   Widget _buildPostList(PostLoaded state) {
     return ListView.builder(
-      controller: _scrollController,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: state.hasReachedMax ? state.posts.length : state.posts.length + 1,
       itemBuilder: (context, index) {
         if (index >= state.posts.length) {
@@ -100,7 +98,7 @@ class _BlogPageState extends State<BlogPage> {
   }
 
   Widget _buildPostItem(Post post) {
-    return  CardPost(
+    return CardPost(
       title: post.title,
       subtitle: post.body,
     );
